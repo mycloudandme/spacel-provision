@@ -489,7 +489,9 @@
           "Fn::Base64": {
             "Fn::Join": [
               "", [
-                "{\"elb\":{\"name\":\"",
+                "{\"tags\": {\"Name\": \"",
+                {"Ref": "AWS::StackName"},
+                "\"},\"elb\":{\"name\":\"",
                 {
                   "Fn::If": [
                     "ElbPublic",
