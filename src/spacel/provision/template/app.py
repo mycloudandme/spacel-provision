@@ -193,5 +193,5 @@ class AppTemplate(BaseTemplateCache):
             user_data += ',"systemd":' + json.dumps(systemd)
         if app.volumes:
             params['VolumeSupport']['Default'] = 'true'
-            user_data += ', "volumes":' + json.dumps(app.volumes)
+            user_data += ',"volumes":' + json.dumps(app.volumes)
         return user_data

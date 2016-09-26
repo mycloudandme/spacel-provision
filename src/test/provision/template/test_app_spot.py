@@ -33,6 +33,7 @@ class TestAppSpotTemplateDecorator(BaseSpaceAppTest):
 
         self.app_spot.spotify(self.app, REGION, self.template)
 
+        params = self.template['Parameters']
         resources = self.template['Resources']
         fleet_config = (resources['SpotFleet']
                         ['Properties']
@@ -41,6 +42,7 @@ class TestAppSpotTemplateDecorator(BaseSpaceAppTest):
         self.assertEquals(1, len(fleet_config['LaunchSpecifications']))
         self.assertNotIn('Asg', resources)
         self.assertNotIn('Lc', resources)
+        self.assertIn('"tags":', params['UserData']['Default'])
 
     def test_spotify_weights(self):
         self.app.spot = {
