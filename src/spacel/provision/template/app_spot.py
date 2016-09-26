@@ -71,7 +71,6 @@ class AppSpotTemplateDecorator(object):
             default_allocation_strat = 'lowestPrice'
         allocation_strat = app.spot.get('strategy', default_allocation_strat)
 
-
         # Build launch specs:
         launch_specs = []
         for weight_type, weight in weights.items():
