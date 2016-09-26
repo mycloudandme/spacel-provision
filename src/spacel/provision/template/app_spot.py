@@ -34,10 +34,11 @@ class AppSpotTemplateDecorator(object):
         tags = {
             'Name': {'Ref': 'AWS::StackName'}
         }
-        user_data_param = parameters['UserData']['Default']
+        user_data_param = parameters['UserData']['Default'] or ''
         if user_data_param:
             user_data_param += ','
         user_data_param += '"tags":' + json.dumps(tags)
+        parameters['UserData']['Default'] = user_data_param
 
         # Extract parameters:
         lc_properties = resources['Lc']['Properties']
