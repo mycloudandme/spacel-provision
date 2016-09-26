@@ -32,7 +32,7 @@ class AppSpotTemplateDecorator(object):
 
         # Set Name tag
         tags = {
-            'Name': {'Ref': 'AWS::StackName'}
+            'Name': app.full_name
         }
         user_data_param = parameters['UserData']['Default'] or ''
         if user_data_param:
