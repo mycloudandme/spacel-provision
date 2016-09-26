@@ -31,9 +31,7 @@ class AppSpotTemplateDecorator(object):
         spot_price = app.spot.get('price', '1.00')
 
         # Set Name tag
-        tags = {
-            'Name': app.full_name
-        }
+        tags = {'Name': app.full_name}
         user_data_param = parameters['UserData']['Default'] or ''
         if user_data_param:
             user_data_param += ','
