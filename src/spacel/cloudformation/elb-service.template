@@ -332,6 +332,23 @@
         }
       }
     },
+    "TagPolicy": {
+      "DependsOn": "Role",
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "Ec2Tags",
+        "Roles": [{"Ref": "Role"}],
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "ec2:CreateTags",
+              "Resource": "*"
+            }
+          ]
+        }
+      }
+    },
     "VolumePolicy": {
       "DependsOn": "Role",
       "Condition": "AddVolumePermissions",
