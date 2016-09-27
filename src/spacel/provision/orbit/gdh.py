@@ -76,6 +76,14 @@ class GitDeployHooksOrbitFactory(BaseCloudFormationFactory):
                 orbit._nat_eips[region][key[-2:]] = value
             elif key.startswith('EnvironmentVpcId'):
                 orbit._vpc_ids[region] = value
+            elif key.startswith('PrivateCacheSubnetGroup'):
+                orbit._private_cache_subnet_groups[region] = value
+            elif key.startswith('PublicRdsSubnetGroup'):
+                orbit._public_rds_subnet_groups[region] = value
+            elif key.startswith('PrivateRdsSubnetGroup'):
+                orbit._private_rds_subnet_groups[region] = value
+            elif key.startswith('RoleSpotFleet'):
+                orbit._spot_fleet_role[region] = value
             elif key.startswith('PublicRouteTable'):
                 continue
             elif key.startswith('PrivateRouteTable'):
@@ -90,7 +98,6 @@ class GitDeployHooksOrbitFactory(BaseCloudFormationFactory):
         orbit._public_elb_subnets[region] = public_subnets
         orbit._private_instance_subnets[region] = private_subnets
         orbit._private_elb_subnets[region] = private_subnets
-        # FIXME: DbSubnetGroups: private_cache, private_rds, public_rds
         logger.debug('Updated %s in %s.', name, region)
         logger.debug('Azs: %s, %s public subnets, %s private subnets.',
                      azs, len(public_subnets), len(private_subnets))
