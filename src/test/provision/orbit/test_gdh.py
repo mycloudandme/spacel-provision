@@ -14,6 +14,7 @@ from test.provision.orbit import (NAME, REGION, VPC_ID, IP_ADDRESS, cf_outputs,
 PARENT_NAME = 'daddy'
 DEPLOY_NAME = 'deploy'
 STACK_ID = 'arn:cloudformation:123456'
+ROLE_SPOT_FLEET = 'arn:iam:role:123456'
 
 
 class TestGitDeployHooksOrbitFactory(unittest.TestCase):
@@ -84,6 +85,10 @@ class TestGitDeployHooksOrbitFactory(unittest.TestCase):
             'PrivateRouteTable': 'rtb-000002',
             'NATElasticIP01': IP_ADDRESS,
             'EnvironmentVpcId': VPC_ID,
+            'PrivateCacheSubnetGroup': 'subnet-000000',
+            'PublicRdsSubnetGroup': 'subnet-000000',
+            'PrivateRdsSubnetGroup': 'subnet-000000',
+            'RoleSpotFleet': ROLE_SPOT_FLEET,
             'CIDR': '%s/32' % IP_ADDRESS,
             'Unknown': 'AndThatsOk'
         }
@@ -101,5 +106,12 @@ class TestGitDeployHooksOrbitFactory(unittest.TestCase):
         self.assertEquals(['subnet-000101'],
                           self.orbit.public_elb_subnets(REGION))
         self.assertEquals(VPC_ID, self.orbit.vpc_id(REGION))
+        self.assertEquals(ROLE_SPOT_FLEET, self.orbit.spot_fleet_role(REGION))
+        self.assertEquals('subnet-000000',
+                          self.orbit.public_rds_subnet_group(REGION))
+        self.assertEquals('subnet-000000',
+                          self.orbit.private_rds_subnet_group(REGION))
+        self.assertEquals('subnet-000000',
+                          self.orbit.private_cache_subnet_group(REGION))
         self.assertEquals(['us-west-2a', 'us-west-2b', 'us-west-2c'],
                           self.orbit.azs(REGION))
