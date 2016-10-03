@@ -31,13 +31,14 @@ class AppSpotTemplateDecorator(object):
     def _add_spot_fleet(app, region, resources, parameters):
         spot_price = app.spot.get('price', '1.00')
 
-        # Set Name tag
-        tags = {'Name': app.full_name}
-        user_data_param = parameters['UserData']['Default'] or ''
-        if user_data_param:
-            user_data_param += ','
-        user_data_param += '"tags":' + json.dumps(tags)
-        parameters['UserData']['Default'] = user_data_param
+        if parameters.get('UserData') is not None:
+            # Set Name tag
+            tags = {'Name': app.full_name}
+            user_data_param = parameters['UserData']['Default'] or ''
+            if user_data_param:
+                user_data_param += ','
+            user_data_param += '"tags":' + json.dumps(tags)
+            parameters['UserData']['Default'] = user_data_param
 
         # Extract parameters:
         lc_properties = resources['Lc']['Properties']
