@@ -13,6 +13,7 @@ from spacel.provision.s3 import TemplateUploader
 from test.provision.orbit import (NAME, REGION, VPC_ID, IP_ADDRESS, cf_outputs)
 
 SECURITY_GROUP_ID = 'sg-123456'
+SPOTFLEET_ROLE_ARN = 'arn:aws:iam::1234567890:role/spot-fleet-role'
 
 
 class TestSpaceElevatorOrbitFactory(unittest.TestCase):
@@ -141,6 +142,7 @@ class TestSpaceElevatorOrbitFactory(unittest.TestCase):
             'PrivateCacheSubnetGroup': 'private-rds',
             'PrivateCacheSubnet01': 'subnet-666666',
             'PrivateRdsSubnet01': 'subnet-777777',
+            'RoleSpotFleet': SPOTFLEET_ROLE_ARN,
             'Unknown': 'AndThatsOk'
 
         }
@@ -157,6 +159,8 @@ class TestSpaceElevatorOrbitFactory(unittest.TestCase):
         self.assertEquals(['subnet-000111'],
                           self.orbit.public_elb_subnets(REGION))
         self.assertEquals(VPC_ID, self.orbit.vpc_id(REGION))
+        self.assertEquals(SPOTFLEET_ROLE_ARN,
+                          self.orbit._spot_fleet_role[REGION])
         self.assertEquals('private-rds',
                           self.orbit.private_rds_subnet_group(REGION))
 

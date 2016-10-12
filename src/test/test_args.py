@@ -9,6 +9,9 @@ from spacel.args import parse_args, parse_s3
 HTTP_ORBIT = 'http://test.com/orbit'
 HTTP_APP = 'https://test.com/app'
 
+FILE_ORBIT = 'test/args/orbit'
+FILE_APP = 'test/args/app'
+
 
 class TestArgParse(unittest.TestCase):
     def test_parse_args_no_args(self):
@@ -47,6 +50,12 @@ class TestArgParse(unittest.TestCase):
             call(HTTP_ORBIT),
             call(HTTP_APP)
         ])
+
+    def test_read_manifest_file(self):
+        orbit, app = parse_args([FILE_ORBIT, FILE_APP], BytesIO())
+
+        self.assertEquals({'foo': 'bar'}, orbit)
+        self.assertEquals({'foz': 'baz'}, app)
 
     @patch('spacel.args.urlopen')
     def test_read_manifest_http_error(self, mock_urlopen):

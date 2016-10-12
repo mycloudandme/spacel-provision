@@ -45,11 +45,18 @@ class TestGitDeployHooksOrbitFactory(unittest.TestCase):
 
     def test_get_orbit(self):
         self.orbit_factory._orbit_from_child = MagicMock()
+        self.orbit_factory._describe_stack.return_value = {
+            'Outputs': [{
+                'OutputKey': 'SecurityGroup',
+                'OutputValue': 'sg-000001'
+            }]
+        }
 
         self.orbit_factory.get_orbit(self.orbit)
 
         self.cloudformation.describe_stack_resource.assert_called_once()
         self.orbit_factory._orbit_from_child.assert_called_once()
+        self.assertEqual(self.orbit._bastion_sgs[REGION], 'sg-000001')
 
     def test_get_orbit_not_found(self):
         self._describe_stack_resource_error('Stack does not exist')

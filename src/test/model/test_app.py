@@ -71,6 +71,29 @@ class TestSpaceApp(unittest.TestCase):
         self.assertEqual(1, len(app.services))
         self.assertIsNotNone(app.services[SERVICE_NAME].unit_file)
 
+    def test_services_units(self):
+        app = SpaceApp(self.orbit, {
+            'services': {
+                SERVICE_NAME: {
+                    'unit_file': '[Unit]'
+                }
+            }
+        })
+
+        self.assertEqual(1, len(app.services))
+        self.assertIsNotNone(app.services[SERVICE_NAME].unit_file)
+        self.assertEqual(app.services[SERVICE_NAME].unit_file, '[Unit]')
+
+    def test_spot(self):
+        app = SpaceApp(self.orbit, {})
+
+        spot_bool = {'spot': True}
+        spot_string = {'spot': 'true'}
+        spot_dict = {'spot': {'very': 'testy'}}
+        self.assertEqual(app._spot(spot_bool), {})
+        self.assertEqual(app._spot(spot_string), {})
+        self.assertEqual(app._spot(spot_dict), spot_dict['spot'])
+
     def test_full_name(self):
         app = SpaceApp(self.orbit, {})
         self.assertEquals(app.full_name, 'test-orbit-test')
