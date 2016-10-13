@@ -1,5 +1,4 @@
 from mock import MagicMock
-import unittest
 
 from spacel.aws import AmiFinder
 from spacel.model import SpaceServicePort, SpaceDockerService
@@ -133,6 +132,15 @@ class TestAppTemplate(BaseSpaceAppTest):
         self.assertEquals(SUBNET_GROUP, (app['Parameters']
                                          ['PrivateRdsSubnetGroup']
                                          ['Default']))
+
+    def test_app_min_in_service(self):
+        self.app.instance_min = 2
+        self.app.instance_max = 2
+        app, _ = self.cache.app(self.app, REGION)
+
+        self.assertEquals(1, (app['Parameters']
+                                 ['InstanceMinInService']
+                                 ['Default']))
 
     def test_user_data(self):
         params = {}

@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from mock import MagicMock, ANY
+from mock import MagicMock, ANY, patch
 import unittest
 
 from botocore.exceptions import ClientError
@@ -47,6 +47,26 @@ class TestBaseCloudFormationFactory(unittest.TestCase):
         )
         self.change_sets.estimate.assert_not_called()
 
+    @patch('spacel.provision.cloudformation.json')
+    def test_stack_not_found_template_url_used(self, mock_json):
+        mock_json.dumps = MagicMock(return_value='unicorns' * 64001)
+
+        not_found = ClientError({'Error': {
+            'Message': 'Stack [test-stack] does not exist'
+        }}, 'CreateChangeSet')
+        self.cloudformation.create_change_set.side_effect = not_found
+
+        result = self.cf_factory._stack(NAME, REGION, TEMPLATE)
+
+        self.assertEqual(result, 'create')
+        self.cloudformation.create_stack.assert_called_with(
+            StackName=NAME,
+            Parameters=ANY,
+            TemplateURL=ANY,
+            Capabilities=ANY
+        )
+        self.change_sets.estimate.assert_not_called()
+
     def test_stack_no_changes(self):
         self.cloudformation.describe_change_set.return_value = NO_CHANGE_SET
 
@@ -54,6 +74,24 @@ class TestBaseCloudFormationFactory(unittest.TestCase):
 
         self.assertIsNone(result)
         self.change_sets.estimate.assert_not_called()
+
+    @patch('spacel.provision.cloudformation.json')
+    def test_stack_no_changes_template_url_used(self, mock_json):
+        mock_json.dumps = MagicMock(return_value='unicorns' * 64001)
+        self.cloudformation.describe_change_set.return_value = NO_CHANGE_SET
+
+        result = self.cf_factory._stack(NAME, REGION, TEMPLATE)
+
+        self.assertIsNone(result)
+        self.change_sets.estimate.assert_not_called()
+
+        self.cloudformation.create_change_set.assert_called_with(
+            Capabilities=ANY,
+            ChangeSetName=ANY,
+            Parameters=ANY,
+            StackName=NAME,
+            TemplateURL=ANY)
+        self.templates.upload.assert_called_once()
 
     def test_stack_change_set_failed(self):
         self.cloudformation.describe_change_set.return_value = {

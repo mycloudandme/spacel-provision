@@ -233,3 +233,4 @@ class TestPagerDutyEndpoints(BaseEndpointTest):
                                                                   'Bar',
                                                                   'Foo',
                                                                   'Baz'))
+        self.assertEquals(None, self.endpoint._get_param_default({}))

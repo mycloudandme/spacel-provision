@@ -84,6 +84,15 @@ class TestSpaceApp(unittest.TestCase):
         self.assertIsNotNone(app.services[SERVICE_NAME].unit_file)
         self.assertEqual(app.services[SERVICE_NAME].unit_file, '[Unit]')
 
+    def test_services_empty_unit(self):
+        app = SpaceApp(self.orbit, {
+            'services': {
+                SERVICE_NAME: {}
+            }
+        })
+        
+        self.assertEqual(0, len(app.services))
+
     def test_spot(self):
         app = SpaceApp(self.orbit, {})
 

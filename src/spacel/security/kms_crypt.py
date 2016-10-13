@@ -104,7 +104,7 @@ class KmsCrypto(object):
             raise ValueError('Incorrect padding')
         unpadded = plaintext[:-pad_length]
 
-        if encoding == 'bytes':
+        if encoding == 'bytes':  # pragma: no cover
             return unpadded
         if six.PY3:  # pragma: no cover
             return str(unpadded, encoding)
