@@ -56,7 +56,7 @@ class TestGitDeployHooksOrbitFactory(unittest.TestCase):
 
         self.cloudformation.describe_stack_resource.assert_called_once()
         self.orbit_factory._orbit_from_child.assert_called_once()
-        self.assertEqual(self.orbit.bastion_sg[REGION], 'sg-000001')
+        self.assertEqual(self.orbit.bastion_sg(REGION), 'sg-000001')
 
     def test_get_orbit_not_found(self):
         self._describe_stack_resource_error('Stack does not exist')

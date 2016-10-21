@@ -160,7 +160,7 @@ class TestSpaceElevatorOrbitFactory(unittest.TestCase):
                           self.orbit.public_elb_subnets(REGION))
         self.assertEquals(VPC_ID, self.orbit.vpc_id(REGION))
         self.assertEquals(SPOTFLEET_ROLE_ARN,
-                          self.orbit.spot_fleet_role[REGION])
+                          self.orbit.spot_fleet_role(REGION))
         self.assertEquals('private-rds',
                           self.orbit.private_rds_subnet_group(REGION))
 
