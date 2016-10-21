@@ -81,7 +81,6 @@ class TestSpaceApp(unittest.TestCase):
         })
 
         self.assertEqual(1, len(app.services))
-        self.assertIsNotNone(app.services[SERVICE_NAME].unit_file)
         self.assertEqual(app.services[SERVICE_NAME].unit_file, '[Unit]')
 
     def test_services_empty_unit(self):
