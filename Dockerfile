@@ -7,6 +7,7 @@ RUN apk add --update \
     musl-dev \
     python3 \
     python3-dev \
+    ca-certificates \
   && pip3 install -r /app/requirements.txt \
   && apk del \
      gcc \
