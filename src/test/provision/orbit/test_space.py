@@ -60,8 +60,8 @@ class TestSpaceElevatorOrbitFactory(unittest.TestCase):
         self.orbit_factory._orbit_stack(self.orbit, self.orbit.regions, 'vpc')
 
         self.vpc_template.vpc.assert_called_once_with(self.orbit, REGION)
-        self.orbit_factory._wait_for_updates.assert_called_once()
-        self.orbit_factory._orbit_from_vpc.assert_called_once()
+        self.orbit_factory._wait_for_updates.assert_not_called()
+        self.orbit_factory._orbit_from_vpc.assert_not_called()
         self.orbit_factory._orbit_from_bastion.assert_not_called()
 
     def test_orbit_stack_bastion_update(self):
@@ -76,9 +76,9 @@ class TestSpaceElevatorOrbitFactory(unittest.TestCase):
         self.vpc_template.vpc.assert_not_called()
         self.bastion_template.bastion.assert_called_once_with(self.orbit,
                                                               REGION)
-        self.orbit_factory._wait_for_updates.assert_called_once()
+        self.orbit_factory._wait_for_updates.assert_not_called()
         self.orbit_factory._orbit_from_vpc.assert_not_called()
-        self.orbit_factory._orbit_from_bastion.assert_called_once()
+        self.orbit_factory._orbit_from_bastion.assert_not_called()
 
     def test_orbit_stack_tables_noop(self):
         self.orbit_factory._stack = MagicMock(return_value=None)

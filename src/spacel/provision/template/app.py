@@ -32,7 +32,13 @@ class AppTemplate(BaseTemplateCache):
         params['VpcId']['Default'] = orbit.vpc_id(region)
         params['Orbit']['Default'] = orbit.name
         params['Service']['Default'] = app.name
-        params['BastionSecurityGroup']['Default'] = orbit.bastion_sg(region)
+
+        bastion_sg = orbit.bastion_sg(region)
+        if bastion_sg:
+            params['BastionSecurityGroup']['Default'] = bastion_sg
+        else:
+            del params['BastionSecurityGroup']
+            del resources['Sg']['Properties']['SecurityGroupIngress'][0]
         cache_subnet_group = orbit.private_cache_subnet_group(region)
         if cache_subnet_group:
             params['PrivateCacheSubnetGroup']['Default'] = cache_subnet_group

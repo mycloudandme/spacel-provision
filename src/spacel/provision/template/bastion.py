@@ -15,6 +15,10 @@ class BastionTemplate(BaseTemplateCache):
         :param region: Region.
         :return: Bastion template.
         """
+        bastion_count = int(orbit.get_param(region, BASTION_INSTANCE_COUNT))
+        if not bastion_count:
+            return False
+
         bastion_template = self.get('asg-bastion')
 
         params = bastion_template['Parameters']
@@ -31,7 +35,6 @@ class BastionTemplate(BaseTemplateCache):
         params['InstanceType']['Default'] = bastion_type
         params['Ami']['Default'] = self._ami.spacel_ami(region)
 
-        bastion_count = int(orbit.get_param(region, BASTION_INSTANCE_COUNT))
         params['InstanceCount']['Default'] = bastion_count
         params['InstanceCountMinusOne']['Default'] = max(bastion_count - 1, 0)
 

@@ -48,6 +48,10 @@ class SpaceElevatorOrbitFactory(BaseCloudFormationFactory):
                 logger.warning('Unknown orbit template: %s', stack_suffix)
                 return
 
+            if not template:
+                logger.debug('Skipping %s, not a valid template', stack_suffix)
+                return
+
             updates[region] = self._stack(stack_name, region, template)
 
         logger.debug('Requested %s in %s, waiting for provisioning...',
