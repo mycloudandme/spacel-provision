@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 
+from colorlog import ColoredFormatter
 from spacel.aws import AmiFinder, ClientCache
 from spacel.args import parse_args
 from spacel.model import SpaceApp, Orbit
@@ -72,8 +73,22 @@ def provision(app):
 
 
 if __name__ == '__main__':  # pragma: no cover
-    log_format = '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
-    logging.basicConfig(level=logging.DEBUG, format=log_format)
+    formatter = ColoredFormatter(
+        "%(log_color)s%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+        datefmt='%Y-%m-%d %H:%M:%S',
+        reset=True,
+        log_colors={
+            'DEBUG':    'cyan',
+            'INFO':     'green',
+            'WARNING':  'yellow',
+            'ERROR':    'red',
+            'CRITICAL': 'red'
+        }
+    )
+    stream_out = logging.StreamHandler()
+    stream_out.setLevel(logging.DEBUG)
+    stream_out.setFormatter(formatter)
+    logging.getLogger().addHandler(stream_out)
     logging.getLogger('boto3').setLevel(logging.CRITICAL)
     logging.getLogger('botocore').setLevel(logging.CRITICAL)
     logging.getLogger('spacel').setLevel(logging.DEBUG)
