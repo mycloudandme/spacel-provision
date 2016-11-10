@@ -19,11 +19,11 @@ SPOTFLEET_ROLE_ARN = 'arn:aws:iam::1234567890:role/spot-fleet-role'
 class TestSpaceElevatorOrbitFactory(unittest.TestCase):
     def setUp(self):
         self.vpc_template = MagicMock(spec=VpcTemplate)
-        self.vpc_template.vpc.return_value = {}
+        self.vpc_template.vpc.return_value = {'Spacel': 'Rules'}
         self.bastion_template = MagicMock(spec=BastionTemplate)
-        self.bastion_template.bastion.return_value = {}
+        self.bastion_template.bastion.return_value = {'Spacel': 'Rules'}
         self.tables_template = MagicMock(spec=TablesTemplate)
-        self.tables_template.tables.return_value = {}
+        self.tables_template.tables.return_value = {'Spacel': 'Rules'}
         self.clients = MagicMock(spec=ClientCache)
         self.change_sets = MagicMock(spec=ChangeSetEstimator)
         self.templates = MagicMock(spec=TemplateUploader)
@@ -60,8 +60,8 @@ class TestSpaceElevatorOrbitFactory(unittest.TestCase):
         self.orbit_factory._orbit_stack(self.orbit, self.orbit.regions, 'vpc')
 
         self.vpc_template.vpc.assert_called_once_with(self.orbit, REGION)
-        self.orbit_factory._wait_for_updates.assert_not_called()
-        self.orbit_factory._orbit_from_vpc.assert_not_called()
+        self.orbit_factory._wait_for_updates.assert_called_once()
+        self.orbit_factory._orbit_from_vpc.assert_called_once()
         self.orbit_factory._orbit_from_bastion.assert_not_called()
 
     def test_orbit_stack_bastion_update(self):
@@ -76,11 +76,27 @@ class TestSpaceElevatorOrbitFactory(unittest.TestCase):
         self.vpc_template.vpc.assert_not_called()
         self.bastion_template.bastion.assert_called_once_with(self.orbit,
                                                               REGION)
+        self.orbit_factory._wait_for_updates.assert_called_once()
+        self.orbit_factory._orbit_from_vpc.assert_not_called()
+        self.orbit_factory._orbit_from_bastion.assert_called_once()
+
+    def test_orbit_stack_tables_noop(self):
+        self.vpc_template.vpc.return_value = {}
+        self.bastion_template.bastion.return_value = {}
+        self.tables_template.tables.return_value = {}
+        self.orbit_factory._stack = MagicMock(return_value=None)
+        self.orbit_factory._wait_for_updates = MagicMock()
+        self.orbit_factory._orbit_from_vpc = MagicMock()
+        self.orbit_factory._orbit_from_bastion = MagicMock()
+
+        self.orbit_factory._orbit_stack(self.orbit, self.orbit.regions,
+                                        'tables')
+
         self.orbit_factory._wait_for_updates.assert_not_called()
         self.orbit_factory._orbit_from_vpc.assert_not_called()
         self.orbit_factory._orbit_from_bastion.assert_not_called()
 
-    def test_orbit_stack_tables_noop(self):
+    def test_orbit_stack_noop(self):
         self.orbit_factory._stack = MagicMock(return_value=None)
         self.orbit_factory._wait_for_updates = MagicMock()
         self.orbit_factory._orbit_from_vpc = MagicMock()

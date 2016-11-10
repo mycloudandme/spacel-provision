@@ -6,6 +6,7 @@ from spacel.model.app import SpaceApp, SpaceDockerService
 ORBIT_REGIONS = ('us-east-1', 'us-west-2')
 CONTAINER = 'pwagner/elasticsearch-aws'
 SERVICE_NAME = 'elasticsearch.service'
+SERVICE_NAME_NO_EXT = 'elasticsearch'
 
 
 class TestSpaceApp(unittest.TestCase):
@@ -70,6 +71,18 @@ class TestSpaceApp(unittest.TestCase):
 
         self.assertEqual(1, len(app.services))
         self.assertIsNotNone(app.services[SERVICE_NAME].unit_file)
+
+    def test_services_service_extension(self):
+        app = SpaceApp(self.orbit, {
+            'services': {
+                SERVICE_NAME_NO_EXT: {
+                    'unit_file': '[Unit]'
+                }
+            }
+        })
+
+        self.assertEqual(1, len(app.services))
+        self.assertEqual(app.services[SERVICE_NAME].unit_file, '[Unit]')
 
     def test_services_units(self):
         app = SpaceApp(self.orbit, {

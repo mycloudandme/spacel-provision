@@ -56,6 +56,14 @@ class TestAppTemplate(BaseSpaceAppTest):
         self.assertEquals(params['VirtualHostDomain']['Default'], 'test.com.')
         self.assertEquals(params['VirtualHost']['Default'], 'app.test.com')
 
+    def test_app_bastion(self):
+        self.orbit.bastion_sg = MagicMock(return_value='sg-123tes')
+
+        app, _ = self.cache.app(self.app, REGION)
+
+        bastion_sg_param = app['Parameters']['BastionSecurityGroup']['Default']
+        self.assertEqual('sg-123tes', bastion_sg_param)
+
     def test_app_private_ports(self):
         self.app.private_ports = {123: ['TCP']}
 

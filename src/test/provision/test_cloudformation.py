@@ -212,6 +212,16 @@ class TestBaseCloudFormationFactory(unittest.TestCase):
         params = self.cf_factory._existing_params(self.cloudformation, NAME)
         self.assertEquals(0, len(params))
 
+    def test_describe_stack(self):
+        self.cloudformation.describe_stacks.return_value = {
+            'Stacks': [
+                'test'
+            ]
+        }
+
+        params = self.cf_factory._describe_stack(self.cloudformation, NAME)
+        self.assertEquals('test', params)
+
     def test_delete_stack(self):
         self.cf_factory._delete_stack(NAME, REGION)
         self.cloudformation.delete_stack.assert_called_with(StackName=NAME)

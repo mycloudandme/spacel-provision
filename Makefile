@@ -1,6 +1,7 @@
 test: build/venv
 	@( . build/venv/bin/activate; \
 	    cd src && \
+	    coverage erase && \
 		nosetests --with-xunit --xunit-file=../build/nosetests.xml \
 			--with-coverage --cover-package=spacel --cover-xml --cover-xml-file=../build/coverage.xml \
 			test \
