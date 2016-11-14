@@ -99,25 +99,19 @@ class VpcTemplate(BaseTemplateCache):
                 nat_gateway_resource = 'NatGateway%02d' % az_index
                 resources[nat_gateway_resource] = nat_gateway_clone
 
-            # Each private route table has a default NAT route:
-            private_default_route_clone = deepcopy(base_default_route)
-            private_route_props = private_default_route_clone['Properties']
-            private_route_props['RouteTableId']['Ref'] = private_rt_resource
-            if private_nat_gateway:
+                # Each private route table has a default NAT route:
+                private_default_route_clone = deepcopy(base_default_route)
+                private_route_props = private_default_route_clone['Properties']
+                private_route_props['RouteTableId']['Ref'] = private_rt_resource
                 private_route_props['NatGatewayId'] = {
                     'Fn::If': [
                         'MultiAzNat', {'Ref': nat_gateway_resource},
                         {'Ref': 'NatGateway01'}
                     ]
                 }
-            else:
-                del private_route_props['NatGatewayId']
-                private_route_props['GatewayId'] = {
-                    'Ref': 'InternetGateway'
-                }
-            private_route_resource = 'PrivateRouteTable%02dDefaultRoute' % \
-                                     az_index
-            resources[private_route_resource] = private_default_route_clone
+                private_route_resource = 'PrivateRouteTable%02dDefaultRoute' % \
+                                         az_index
+                resources[private_route_resource] = private_default_route_clone
 
         self._add_subnet_ids(resources, azs, 'PrivateCache')
         self._add_subnet_ids(resources, azs, 'PublicRds')
@@ -127,6 +121,7 @@ class VpcTemplate(BaseTemplateCache):
             private_route_table_default_route = (
                 resources['PrivateRouteTable01DefaultRoute']['Properties'])
             del (resources['NatGateway01'], resources['NatEip01'],
+                 resources['PrivateRouteTable01DefaultRoute'],
                  private_route_table_default_route['NatGatewayId'])
             private_route_table_default_route['GatewayId'] = {
                 'Ref': 'InternetGateway'

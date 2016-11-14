@@ -32,9 +32,6 @@ class TestVpcTemplate(unittest.TestCase):
         vpc_resources = vpc['Resources']
 
         self.assertNotIn('NatGateway01', vpc_resources)
-        route = vpc_resources['PrivateRouteTable02DefaultRoute']['Properties']
-        self.assertNotIn('NatGatewayId', route)
-        self.assertIn('GatewayId', route)
 
     def test_vpc(self):
         self.vpc_regions('us-east-1a', 'us-east-1b')
