@@ -4,6 +4,7 @@ import logging
 import six
 
 from spacel.aws import INSTANCE_VOLUMES
+from spacel.model.orbit import PRIVATE_NAT_GATEWAY
 from spacel.provision import base64_encode
 from spacel.provision.template.base import BaseTemplateCache
 
@@ -103,6 +104,15 @@ class AppTemplate(BaseTemplateCache):
             # There is no other means of getting internet (out) otherwise!
             resources['Lc']['Properties']['AssociatePublicIpAddress'] = True
         else:
+            private_nat_gateway = orbit.get_param(
+                region, PRIVATE_NAT_GATEWAY) == 'enabled'
+            if not private_nat_gateway:
+                logger.error('"private_nat_gateway" has been disabled in' +
+                             ' orbit.json, availability "private" is not' +
+                             ' possible while the nat gateway has been' +
+                             ' disabled!')
+                return False, False
+
             self._asg_subnets(resources, 'PrivateInstance',
                               private_instance_subnets)
 

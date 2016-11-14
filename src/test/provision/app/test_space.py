@@ -18,7 +18,7 @@ class TestSpaceElevatorAppFactory(unittest.TestCase):
         self.change_sets = MagicMock(spec=ChangeSetEstimator)
         self.templates = MagicMock(spec=TemplateUploader)
         self.app_template = MagicMock(spec=AppTemplate)
-        self.app_template.app.return_value = {}, {}
+        self.app_template.app.return_value = {'Spacel': 'Rules'}, {}
 
         self.provisioner = SpaceElevatorAppFactory(self.clients,
                                                    self.change_sets,
@@ -46,4 +46,11 @@ class TestSpaceElevatorAppFactory(unittest.TestCase):
 
         self.assertEquals(len(REGIONS),
                           self.provisioner._delete_stack.call_count)
+        self.assertEquals(1, self.provisioner._wait_for_updates.call_count)
+
+    def test_app_syntax_rejected(self):
+        self.app_template.app.return_value = False, False
+        self.provisioner.app(self.app)
+
+        self.provisioner._stack.assert_not_called()
         self.assertEquals(1, self.provisioner._wait_for_updates.call_count)

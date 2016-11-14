@@ -21,6 +21,10 @@ class SpaceElevatorAppFactory(BaseCloudFormationFactory):
         updates = {}
         for region in app.regions:
             template, secret_params = self._app_template.app(app, region)
+            if not template and not secret_params:
+                logger.warn('App %s will not be updated, invalid syntax!',
+                            app_name)
+                continue
             updates[region] = self._stack(app_name, region, template,
                                           secret_parameters=secret_params)
         return self._wait_for_updates(app_name, updates)

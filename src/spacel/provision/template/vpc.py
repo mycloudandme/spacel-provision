@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from spacel.model.orbit import NAT_PER_AZ, PRIVATE_NETWORK
+from spacel.model.orbit import NAT_PER_AZ, PRIVATE_NETWORK, PRIVATE_NAT_GATEWAY
 from spacel.provision.template.base import BaseTemplateCache
 
 
@@ -31,6 +31,9 @@ class VpcTemplate(BaseTemplateCache):
 
         base_az = params['Az01']
         base_az['Default'] = azs[0]
+
+        private_nat_gateway = orbit.get_param(
+            region, PRIVATE_NAT_GATEWAY) == 'enabled'
 
         base_nat_eip = resources['NatEip01']
         base_nat_gateway = resources['NatGateway01']
@@ -75,36 +78,43 @@ class VpcTemplate(BaseTemplateCache):
             self._add_subnet(resources, outputs, az_index, az_param,
                              'PrivateRds', 180 + az_index, private_rt_resource)
 
-            # Each AZ _can_ have a NAT gateway:
-            nat_eip_clone = deepcopy(base_nat_eip)
-            nat_eip_clone['Condition'] = 'MultiAzNat'
-            nat_eip_resource = 'NatEip%02d' % az_index
-            resources[nat_eip_resource] = nat_eip_clone
-            outputs[nat_eip_resource] = {
-                'Value': {'Fn::If': ['MultiAzNat',
-                                     {'Ref': nat_eip_resource}, '']}
-            }
+            if private_nat_gateway:
+                # Each AZ _can_ have a NAT gateway:
+                nat_eip_clone = deepcopy(base_nat_eip)
+                nat_eip_clone['Condition'] = 'MultiAzNat'
+                nat_eip_resource = 'NatEip%02d' % az_index
+                resources[nat_eip_resource] = nat_eip_clone
+                outputs[nat_eip_resource] = {
+                    'Value': {'Fn::If': ['MultiAzNat',
+                                         {'Ref': nat_eip_resource}, '']}
+                }
 
-            # Each AZ _can_ have a NAT gateway:
-            nat_gateway_clone = deepcopy(base_nat_gateway)
-            nat_gateway_clone['Condition'] = 'MultiAzNat'
-            nat_gateway_props = nat_gateway_clone['Properties']
-            nat_gateway_props['SubnetId']['Ref'] = nat_subnet_resource
-            nat_gateway_props['AllocationId']['Fn::GetAtt'][0] = \
-                nat_eip_resource
-            nat_gateway_resource = 'NatGateway%02d' % az_index
-            resources[nat_gateway_resource] = nat_gateway_clone
+                # Each AZ _can_ have a NAT gateway:
+                nat_gateway_clone = deepcopy(base_nat_gateway)
+                nat_gateway_clone['Condition'] = 'MultiAzNat'
+                nat_gateway_props = nat_gateway_clone['Properties']
+                nat_gateway_props['SubnetId']['Ref'] = nat_subnet_resource
+                nat_gateway_props['AllocationId']['Fn::GetAtt'][0] = \
+                    nat_eip_resource
+                nat_gateway_resource = 'NatGateway%02d' % az_index
+                resources[nat_gateway_resource] = nat_gateway_clone
 
             # Each private route table has a default NAT route:
             private_default_route_clone = deepcopy(base_default_route)
             private_route_props = private_default_route_clone['Properties']
             private_route_props['RouteTableId']['Ref'] = private_rt_resource
-            private_route_props['NatGatewayId'] = {
-                'Fn::If': [
-                    'MultiAzNat', {'Ref': nat_gateway_resource},
-                    {'Ref': 'NatGateway01'}
-                ]
-            }
+            if private_nat_gateway:
+                private_route_props['NatGatewayId'] = {
+                    'Fn::If': [
+                        'MultiAzNat', {'Ref': nat_gateway_resource},
+                        {'Ref': 'NatGateway01'}
+                    ]
+                }
+            else:
+                del private_route_props['NatGatewayId']
+                private_route_props['GatewayId'] = {
+                    'Ref': 'InternetGateway'
+                }
             private_route_resource = 'PrivateRouteTable%02dDefaultRoute' % \
                                      az_index
             resources[private_route_resource] = private_default_route_clone
@@ -112,6 +122,16 @@ class VpcTemplate(BaseTemplateCache):
         self._add_subnet_ids(resources, azs, 'PrivateCache')
         self._add_subnet_ids(resources, azs, 'PublicRds')
         self._add_subnet_ids(resources, azs, 'PrivateRds')
+
+        if not private_nat_gateway:
+            private_route_table_default_route = (
+                resources['PrivateRouteTable01DefaultRoute']['Properties'])
+            del (resources['NatGateway01'], resources['NatEip01'],
+                 private_route_table_default_route['NatGatewayId'])
+            private_route_table_default_route['GatewayId'] = {
+                'Ref': 'InternetGateway'
+            }
+            outputs['NatEip01']['Value'] = ''
 
         return vpc_template
 

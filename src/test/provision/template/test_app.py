@@ -44,7 +44,6 @@ class TestAppTemplate(BaseSpaceAppTest):
         resources = app['Resources']
 
         self.assertEquals(params['VirtualHostDomain']['Default'], 'test.com.')
-
         self.assertEquals(params['VirtualHost']['Default'], DOMAIN_NAME)
 
         block_devs = resources['Lc']['Properties']['BlockDeviceMappings']
@@ -77,6 +76,13 @@ class TestAppTemplate(BaseSpaceAppTest):
         public_addr = (app['Resources']['Lc']['Properties']
                           ['AssociatePublicIpAddress'])
         self.assertEqual(True, public_addr)
+
+    def test_app_availability_nat_gateway(self):
+        self.app.instance_availability = 'private'
+        self.orbit.get_param = MagicMock(return_value=False)
+
+        app, _ = self.cache.app(self.app, REGION)
+        self.assertEqual(app, False)
 
     def test_app_no_loadbalancer(self):
         self.app.loadbalancer = False

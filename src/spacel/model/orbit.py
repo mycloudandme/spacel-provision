@@ -8,6 +8,7 @@ DEFAULTS = 'defaults'
 NAME = 'name'
 DOMAIN = 'domain'
 PRIVATE_NETWORK = 'private_network'
+PRIVATE_NAT_GATEWAY = 'private_nat_gateway'
 
 BASTION_INSTANCE_COUNT = 'bastion_instance_count'
 BASTION_INSTANCE_TYPE = 'bastion_instance_type'
@@ -23,6 +24,7 @@ GDH_DEPLOY = 'deploy_stack'
 class Orbit(object):
     DEFAULT_VALUES = {
         PRIVATE_NETWORK: '192.168',
+        PRIVATE_NAT_GATEWAY: 'enabled',
         BASTION_INSTANCE_COUNT: 1,
         BASTION_INSTANCE_TYPE: 't2.nano',
         BASTION_SOURCE: '0.0.0.0/0',

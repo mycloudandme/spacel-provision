@@ -6,7 +6,8 @@
     "us-west-2"
   ],
   "us-east-1": {
-    "bastion_instance_count": 0
+    "bastion_instance_count": 0,
+    "private_nat_gateway": "disabled"
   },
   "us-west-2": {
     "provider": "gdh",
