@@ -51,7 +51,7 @@ class TestIngressResourceFactory(unittest.TestCase):
     def test_ingress_resources_other_region(self):
         self.ingress._app_eips = MagicMock(return_value=['1.1.1.1', '2.2.2.2'])
         resources = self._http_ingress(OTHER_REGION)
-        # 1 per Nat EIP:
+        # 1 per App EIP:
         self.assertEquals(2, len(resources))
         for resource in resources.values():
             self.assertIn('CidrIp', resource['Properties'])
@@ -89,14 +89,14 @@ class TestIngressResourceFactory(unittest.TestCase):
                           'test-app')
 
     def test_app_eips(self):
-        resourceList = [{
+        resource_list = [{
             'StackResourceSummaries': [{
                 'LogicalResourceId': 'ElasticIp01',
                 'PhysicalResourceId': ELASTIC_IP
             }]
         }]
         pages = MagicMock()
-        pages.paginate = MagicMock(return_value=resourceList)
+        pages.paginate = MagicMock(return_value=resource_list)
         self.cloudformation.get_paginator = MagicMock(return_value=pages)
 
         eips = self.ingress._app_eips(self.orbit, REGION, 'test-app')
