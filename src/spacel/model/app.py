@@ -15,6 +15,12 @@ ELB_AVAILABILITY = INSTANCE_AVAILABILITY | {
     'disabled',
 }
 
+UPDATE_POLICY = {
+    'rolling',
+    'redblack',
+    'disabled'
+}
+
 
 class SpaceApp(object):
     """
@@ -78,6 +84,7 @@ class SpaceAppRegion(object):
                  instance_min=1,
                  instance_type='t2.nano',
                  local_health_check='TCP:80',
+                 update_policy='rolling',
                  spot=None):
         self.app = app
         self.orbit_region = orbit_region
@@ -91,6 +98,7 @@ class SpaceAppRegion(object):
         self.instance_min = instance_min
         self.instance_type = instance_type
         self.local_health_check = local_health_check
+        self.update_policy = update_policy
         self.spot = spot
         self.alarms = {}
         self.caches = {}
@@ -127,6 +135,10 @@ class SpaceAppRegion(object):
             self._invalid_value('instance_availability',
                                 self.instance_availability,
                                 INSTANCE_AVAILABILITY)
+            valid = False
+        if self.update_policy not in UPDATE_POLICY:
+            self._invalid_value('update_policy', self.update_policy,
+                                UPDATE_POLICY)
             valid = False
         return valid
 
