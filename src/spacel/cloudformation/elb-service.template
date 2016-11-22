@@ -612,6 +612,11 @@
             "Key": "Name",
             "Value": {"Ref": "AWS::StackName"},
             "PropagateAtLaunch": true
+          },
+          {
+            "Key": "LaunchConfiguration",
+            "Value": {"Ref": "Lc"},
+            "PropagateAtLaunch": true
           }
         ]
       },

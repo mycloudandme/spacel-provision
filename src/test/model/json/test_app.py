@@ -259,7 +259,7 @@ class TestSpaceAppJsonModelFactory(BaseSpaceAppTest):
             self.assertEquals(1, len(app_region.services))
             laika_service = app_region.services['laika.service']
             if docker:
-                self.assertEquals('pebbletech/laika:latest',
+                self.assertEquals('pebbletech/spacel-laika:latest',
                                   laika_service.image)
                 self.assertEquals({'80': 8080}, laika_service.ports)
             else:

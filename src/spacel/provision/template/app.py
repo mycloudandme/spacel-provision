@@ -133,7 +133,8 @@ class AppTemplate(BaseTemplateCache):
                                 'Action': [
                                     'ec2:AssociateAddress',
                                     'ec2:DescribeAddresses',
-                                    'ec2:DescribeInstances'
+                                    'ec2:DescribeInstances',
+                                    'autoscaling:DescribeLaunchConfigurations'
                                 ],
                                 'Resource': '*'
                             }

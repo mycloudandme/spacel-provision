@@ -1,6 +1,7 @@
 {
   "name": "laika",
   "all": {
+    "update_policy": "redblack",
     "elastic_ips": "enabled",
     "elb_availability": "disabled",
     "instance_availability": "internet-facing",
@@ -9,7 +10,7 @@
     "instance_max": 1,
     "services": {
       "http-env-echo": {
-        "image": "pebbletech/laika:latest",
+        "image": "pebbletech/spacel-laika:latest",
         "ports": {
           "80": 8080
         }
