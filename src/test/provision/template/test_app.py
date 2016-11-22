@@ -98,12 +98,25 @@ class TestAppTemplate(BaseTemplateTest):
         self.assertNotIn('DnsRecord', app['Resources'])
         self.assertNotIn('ElbHealthPolicy', app['Resources'])
         self.assertNotIn('LoadBalancerNames', app['Resources']['Asg']
-        ['Properties'])
+                                                 ['Properties'])
         self.assertNotIn('PrivateElbSubnet01', app['Parameters'])
         self.assertNotIn('PublicElbSubnet01', app['Parameters'])
         self.assertEqual('disabled', app['Parameters']['ElbScheme']['Default'])
         self.assertEqual('EC2', app['Resources']['Asg']['Properties']
-        ['HealthCheckType'])
+                                   ['HealthCheckType'])
+
+    def test_app_no_update_policy(self):
+        self.app_region.update_policy = 'disabled'
+        app, _ = self.cache.app(self.app_region)
+
+        self.assertNotIn('UpdatePolicy', app['Resources']['Asg'])
+
+    def test_app_update_policy_redblack(self):
+        self.app_region.update_policy = 'redblack'
+        app, _ = self.cache.app(self.app_region)
+
+        self.assertIn('AutoScalingReplacingUpdate', app['Resources']['Asg']
+                                                       ['UpdatePolicy'])
 
     def test_app_no_loadbalancer_elastic_ips(self):
         self.app_region.elb_availability = 'disabled'

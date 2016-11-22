@@ -50,6 +50,10 @@ class TestSpaceAppRegion(BaseSpaceAppTest):
         self.app_region.instance_availability = 'meow'
         self.assertFalse(self.app_region.valid)
 
+    def test_valid_invalid_update_policy(self):
+        self.app_region.update_policy = 'meow'
+        self.assertFalse(self.app_region.valid)
+
     def test_load_balancer_true(self):
         self.app_region.elb_availability = 'internet-facing'
         self.assertTrue(self.app_region.load_balancer)
