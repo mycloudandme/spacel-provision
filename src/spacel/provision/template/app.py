@@ -152,12 +152,6 @@ class AppTemplate(BaseTemplateCache):
                     'WillReplace': 'true'
                 }
             }
-            time_pos = (resources['Lc']
-                        ['Properties']
-                        ['UserData']
-                        ['Fn::Base64']
-                        ['Fn::Join'][1])
-            time_pos.insert(1, '"time":"%s",' % str(time.time()))
 
         # Expand ASG to all AZs:
         public_instance_subnets = orbit_region.public_instance_subnets
